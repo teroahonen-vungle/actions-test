@@ -1,0 +1,73 @@
+# This is a basic workflow to help you get started with Actions
+
+name: 'Apiserver deploy to PRODUCTION'
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  release:
+    types: [published]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+env:
+  DEPLOYMENT: apiserver
+  QUAY_REGISTRY: quay.io/gamerefinery
+  REPO: apiserver-service
+  IMAGE_TAG: prod
+  SOURCE_IMAGE_TAG: staging
+  OC_PROJECT_EU: production
+  OC_PROJECT_US: production-us
+  OC_PROJECT_APAC: gr-saas-prod
+jobs:
+  release:
+    name: Tag release image
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/gamerefinery/github-actions-container:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+   
+      - id: get-release
+        run: echo "::set-output name=release::$(echo ${{ github.ref }} | cut -d/ -f3)"
+
+      - name: Check release
+        run: echo "${{steps.get-release.outputs.release}}"
+
+      - name: Login to Quay.io
+        run: skopeo login quay.io -u ${{ secrets.QUAY_USERNAME }} -p${{ secrets.QUAY_PASSWORD }}
+  
+      - name: Tag release image
+        run: |
+          skopeo copy docker://${{env.QUAY_REGISTRY}}/${{env.REPO}}:${{env.SOURCE_IMAGE_TAG}} docker://${{env.QUAY_REGISTRY}}/${{env.REPO}}:${{steps.get-release.outputs.release}}
+          skopeo copy docker://${{env.QUAY_REGISTRY}}/${{env.REPO}}:${{env.SOURCE_IMAGE_TAG}} docker://${{env.QUAY_REGISTRY}}/${{env.REPO}}:${{env.IMAGE_TAG}}
+  deploy-eu:
+    name: Deploy to EU
+    runs-on: ubuntu-latest
+    needs: release
+    steps:
+      - name: Login to OpenShift EU
+        run: oc login ${{ secrets.OC_API_ENDPOINT_EU }} --token=${{ secrets.OC_TOKEN_PROD_EU }}
+      - name: Rollout deployment to EU
+        run: oc rollout latest ${{env.DEPLOYMENT}} -n ${{env.OC_PROJECT_EU}}  
+  deploy-us:
+    name: Deploy to US
+    runs-on: ubuntu-latest
+    needs: release
+    steps:
+      - name: Login to OpenShift US
+        run: oc login ${{ secrets.OC_API_ENDPOINT_US }} --token=${{ secrets.OC_TOKEN_PROD_US }}
+      - name: Rollout deployment to US
+        run: oc rollout latest ${{env.DEPLOYMENT}} -n ${{env.OC_PROJECT_US}} 
+  deploy-apac:
+    name: Deploy to APAC
+    runs-on: ubuntu-latest
+    needs: release
+    steps:
+      - name: Login to OpenShift APAC
+        run: oc login ${{ secrets.OC_API_ENDPOINT_APAC }} --token=${{ secrets.OC_TOKEN_PROD_APAC }}
+      - name: Rollout deployment to APAC
+        run: oc rollout restart deployment/${{env.DEPLOYMENT}} -n ${{env.OC_PROJECT_APAC}}
+
+
+ 

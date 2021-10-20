@@ -1,0 +1,18 @@
+name: Ping
+
+on:
+  pull_request:
+    branches: [ devel ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+jobs:
+  compile:
+    name: Ping
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    # If none of these files has changed, we assume that the contents of .m2/repository can be fetched from the cache.
+    - name: Ping pong
+      run: |
+        echo 'Pong'
