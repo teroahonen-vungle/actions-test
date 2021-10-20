@@ -1,4 +1,4 @@
-name: Ping
+name: PR to devel
 
 on:
   pull_request:
