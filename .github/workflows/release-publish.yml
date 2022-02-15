@@ -1,4 +1,4 @@
-name: PR to main
+name: Release publish
 
 on:
   release:
@@ -36,7 +36,7 @@ jobs:
         git config --local user.name "GitHub Action"
         git commit -am "Change release to ${{ steps.commit_id.outputs.sha_short  }}"
         git tag -f release
-        
+
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
