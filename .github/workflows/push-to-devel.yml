@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+
     - name: Get commit SHA
       id: commit_id
       run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
@@ -19,7 +20,7 @@ jobs:
       shell: bash
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: branch_name
-    # If none of these files has changed, we assume that the contents of .m2/repository can be fetched from the cache.
+
     - name: Ping pong
       run: |
-        echo 'Push to devel, branch: ${{ steps.branch_name.outputs.branch }}, commit_id: ${{ steps.commit_id.outputs.sha_short }}
+        echo 'Push to devel, branch: ${{ steps.branch_name.outputs.branch }}, commit_id: ${{ steps.commit_id.outputs.sha_short }}'
