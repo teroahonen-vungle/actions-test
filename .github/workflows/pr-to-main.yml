@@ -40,18 +40,37 @@ jobs:
             echo "Run conftest"
             kustomize build k8s/overlays/dev | conftest test -p k8s/base.rego -
             echo "Run kubeval"
-            kustomize build k8s/overlays/dev | kubeval --strict
+            kustomize build k8s/overlays/dev | kubeval -
     - name: kube-linter
       uses: stackrox/kube-linter-action@v1.0.4
       with:
         # Directory or file to scan
         directory: k8s/overlays/dev
         # Path to config file
-        # config: # optional
+        config: k8s/kube-linter.yaml
         # Output format. Allowed values: sarif, plain, json. Default: "plain"
-        # format: # optional, default is plain
+        format: plain
         # Filename to store output. File will be overwritten if it exists. Default: "kubelinter.log"
-        # output-file: # optional, default is kubelinter.log
+        output-file: kubelinter.log
         # Version of kube-linter to use. E.g. "0.2.4". Default: "latest"
         # version: # optional, default is latest
+
+    - name: list
+      shell: bash
+      run: ls -la
+      id: ls
+
+    - name: Create an issue
+      uses: actions-ecosystem/action-create-issue@v1
+      with:
+        github_token: ${{ secrets.github_token }}
+        title: kube-linter results
+        body: |
+          ## This week's TODO
+
+          - [ ] Have a meeting with UX team
+          - [ ] Check the dashboard
+
+        labels: |
+          kube-linter
 
