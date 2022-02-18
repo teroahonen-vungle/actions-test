@@ -63,7 +63,7 @@ jobs:
 
     - name: Get linter content
       id: linter-output
-      run: echo "::set-output name=kubelinter::$(cat kubelinter.log)"
+      run: echo "::set-output name=kubelinter::$(<commit.txt)"
 
     - name: Create an issue
       if: always()
