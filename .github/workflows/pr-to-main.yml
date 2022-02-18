@@ -38,7 +38,7 @@ jobs:
         kubeconform: 0.4.12
         command: |
             echo "Run conftest"
-            kustomuze build k8s/overlays/dev | conftest test -p test/policy -
+            kustomize build k8s/overlays/dev | conftest test -p test/policy -
             echo "Run kubeval"
-            kustomuze build k8s/overlays/dev | kubeval --strict
+            kustomize build k8s/overlays/dev | kubeval --strict
 
