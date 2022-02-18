@@ -1,0 +1,6 @@
+apiVersion: v1
+data:
+  SLACKBOT_WEBHOOK_NOTIFICATION_URL: https://hooks.slack.com/services/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
+kind: ConfigMap
+metadata:
+  name: slack-webhook-urls

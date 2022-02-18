@@ -1,0 +1,75 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: feedserver-jobs-slack-events
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            parent: feedserver-jobs
+        spec:
+          containers:
+          - command:
+            - java
+            - -jar
+            - -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager
+            - feedserver-jobs-slack-events.jar
+            env:
+            - name: FEEDSERVER_MONGODB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: MONGODB_USERNAME
+                  name: feedserver-mongodb
+            - name: FEEDSERVER_MONGODB_PORT
+              valueFrom:
+                secretKeyRef:
+                  key: MONGODB_PORT
+                  name: feedserver-mongodb
+            - name: FEEDSERVER_MONGODB_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: MONGODB_HOST
+                  name: feedserver-mongodb
+            - name: FEEDSERVER_MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: MONGODB_PASSWORD
+                  name: feedserver-mongodb
+            - name: FEEDSERVER_MONGODB_DBNAME
+              valueFrom:
+                secretKeyRef:
+                  key: MONGODB_DBNAME
+                  name: feedserver-mongodb
+            - name: NOTIFICATION_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: slack-webhook-urls
+                  key: SLACKBOT_WEBHOOK_NOTIFICATION_URL
+            envFrom:
+            - secretRef:
+                name: feedserver-jobsboard-config
+            - configMapRef:
+                name: slack-events-config
+            image: quay.io/gamerefinery/feedserver-jobs
+            imagePullPolicy: Always
+            name: feedserver-jobs-slack-events
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          imagePullSecrets:
+          - name: quay-puller
+          restartPolicy: Never
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+  schedule: '*/15 * * * *'
+  successfulJobsHistoryLimit: 1
+  suspend: false
