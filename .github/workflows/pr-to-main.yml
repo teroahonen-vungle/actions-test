@@ -56,12 +56,13 @@ jobs:
         # version: # optional, default is latest
 
     - name: list
-      if: always()
+      
       shell: bash
       run: ls -la
       id: ls
 
     - name: Read package.json
+      if: always()
       id: linter-output
       uses: juliangruber/read-file-action@v1
       with:
