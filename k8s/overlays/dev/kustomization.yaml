@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+  - dashboard-config-ss.yml
+
+patchesStrategicMerge:
+- patch.yml
+  
+images:
+ - name: quay.io/gamerefinery/feedserver-jobs
+   newName: quay.io/gamerefinery/feedserver-jobs
+   newTag: latest

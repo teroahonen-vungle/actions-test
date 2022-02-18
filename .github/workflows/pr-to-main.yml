@@ -25,3 +25,20 @@ jobs:
     - name: Ping pong
       run: |
         echo 'PR to main, branch: ${{ steps.branch_name.outputs.branch }}, commit_id: ${{ steps.commit_id.outputs.sha_short }}'
+
+    - name: Kubeval
+      uses: stefanprodan/kube-tools@v1
+      with:
+        kubectl: 1.22.0
+        kustomize: 4.4.1
+        helmv3: 3.7.2
+        kubeseal: 0.16.0
+        kubeval: v0.16.1
+        conftest: 0.28.3
+        kubeconform: 0.4.12
+        command: |
+            echo "Run conftest"
+            kustomuze build k8s/overlays/dev | conftest test -p test/policy -
+            echo "Run kubeval"
+            kustomuze build k8s/overlays/dev | kubeval --strict
+

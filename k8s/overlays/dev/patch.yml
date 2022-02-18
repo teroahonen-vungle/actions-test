@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    env: dev
+  name: feedserver-jobs-digests
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    env: dev
+  name: feedserver-jobs-slack-events
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: slack-events-config
+data:
+  ENV: dev

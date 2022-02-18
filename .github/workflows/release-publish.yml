@@ -37,6 +37,10 @@ jobs:
         git commit -am "Change release to ${{ steps.commit_id.outputs.sha_short  }}"
         git tag -f release
 
+    - name: Commit files
+      run: |
+        env
+
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
