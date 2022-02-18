@@ -61,17 +61,20 @@ jobs:
       run: ls -la
       id: ls
 
+    - name: Get linter content
+      id: linter-output
+      run: echo "::set-output name=kubelinter::$(cat kubelinter.log)"
+
     - name: Create an issue
       if: always()
       uses: actions-ecosystem/action-create-issue@v1
       with:
-        github_token: ${{ secrets.github_token }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
         title: kube-linter results
         body: |
-          ## This week's TODO
+          ## kube-linter results
 
-          - [ ] Have a meeting with UX team
-          - [ ] Check the dashboard
+          ${{ steps.linter-output.outputs.kubelinter }}
 
         labels: |
           kube-linter
