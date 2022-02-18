@@ -38,14 +38,15 @@ jobs:
         kubeconform: 0.4.12
         command: |
             echo "Run conftest"
-            kustomize build k8s/overlays/dev | conftest test -p k8s/base.rego -
+            mkdir manifests
+            kustomize build -o ./manifests k8s/overlays/dev  | conftest test -p k8s/base.rego -
 
     - name: kube-linter
       if: always()
       uses: stackrox/kube-linter-action@v1.0.4
       with:
         # Directory or file to scan
-        directory: k8s/overlays/dev
+        directory: manifests
         # Path to config file
         config: k8s/kube-linter.yaml
         # Output format. Allowed values: sarif, plain, json. Default: "plain"
