@@ -38,7 +38,7 @@ jobs:
         kubeconform: 0.4.12
         command: |
             echo "Run conftest"
-            kustomize build k8s/overlays/dev | conftest test -p k8s/base.policy -
+            kustomize build k8s/overlays/dev | conftest test -p k8s/base.rego -
             echo "Run kubeval"
             kustomize build k8s/overlays/dev | kubeval --strict
     - name: kube-linter
