@@ -39,9 +39,9 @@ jobs:
         command: |
             echo "Run conftest"
             kustomize build k8s/overlays/dev | conftest test -p k8s/base.rego -
-            echo "Run kubeval"
-            kustomize build k8s/overlays/dev | kubeval -
+
     - name: kube-linter
+      if: always()
       uses: stackrox/kube-linter-action@v1.0.4
       with:
         # Directory or file to scan
